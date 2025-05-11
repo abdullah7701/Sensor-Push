@@ -1,7 +1,6 @@
 {
   "name": "react-tailwind-css-starter-pack",
   "version": "0.1.0",
-  "proxy": "http://161.35.107.143:8080",
   "private": true,
   "dependencies": {
     "lucide-react": "^0.503.0",
