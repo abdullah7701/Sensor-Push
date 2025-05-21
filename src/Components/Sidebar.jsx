@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Search, Table, Check } from "lucide-react";
 
-export default function Sidebar() {
-  const [selectedView, setSelectedView] = useState("Sensors_Data");
-
+export default function Sidebar({ selectedView, setSelectedView }) {
+  const [searchQuery, setSearchQuery] = useState("");
   const views = ["Sensors_Data", "Existing Store"];
+
+  const filteredViews = views.filter((view) =>
+    view.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <aside className="w-64 bg-white border-r p-6 flex flex-col justify-between h-screen shadow-lg">
@@ -13,13 +16,15 @@ export default function Sidebar() {
           <Search className="absolute left-3 top-2.5 text-gray-500 w-5 h-5" />
           <input
             type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Find a view"
             className="pl-10 pr-3 py-2 w-full border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 text-sm transition-all"
           />
         </div>
 
         <ul className="space-y-2">
-          {views.map((view) => (
+          {filteredViews.map((view) => (
             <li
               key={view}
               onClick={() => setSelectedView(view)}

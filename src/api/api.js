@@ -1,27 +1,62 @@
+const BASE_URL = "http://161.35.107.143:8080";
+
 export const fetchSensorData = async () => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/get-sensor-data/`, {
-      mode: 'cors', // explicitly set CORS mode
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
+    const response = await fetch(`${BASE_URL}/get-sensor-data/`);
     const text = await response.text();
     const sanitizedText = text.replace(/Infinity/g, 'null');
     const result = JSON.parse(sanitizedText);
-    
     if (result.status === 'success') {
       return result.data;
     } else {
-      throw new Error('Failed to fetch sensor data: ' + (result.message || 'Unknown error'));
+      throw new Error('Failed to fetch sensor data');
     }
   } catch (error) {
     console.error('Error fetching sensor data:', error);
-    throw error; // Re-throw to let calling code handle it
+    return [];
+  }
+};
+
+export const updateNotificationStatus = async (sensorId, notificationStatus) => {
+  try {
+    const payload = {
+      sensor_id: sensorId,
+      notification_status: notificationStatus,
+    };
+    const response = await fetch(`${BASE_URL}/update-notification-status/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload), // Updated line: Removed { payload } wrapper
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    const result = await response.json();
+    if (result.status !== "success") {
+      throw new Error(result.message || "Failed to update notification status");
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error updating notification status:', error);
+    throw error;
+  }
+};
+export const fetchExistingStoreData = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/get-existing-store-data/`);
+    const result = await response.json();
+    if (result.status === 'success') {
+      return result.data;
+    } else {
+      throw new Error('Failed to fetch existing store data');
+    }
+  } catch (error) {
+    console.error('Error fetching existing store data:', error);
+    return [];
   }
 };

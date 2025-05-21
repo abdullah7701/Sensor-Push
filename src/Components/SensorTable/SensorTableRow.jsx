@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { updateNotificationStatus } from "../../api/api";
 
-export default function TableRow({ sensor, openPopup, setSensorData }) {
+export default function SensorTableRow({ sensor, openPopup, setSensorData }) {
   const [isToggling, setIsToggling] = useState(false);
 
   const handleNotificationToggle = async () => {
@@ -8,23 +9,9 @@ export default function TableRow({ sensor, openPopup, setSensorData }) {
     setIsToggling(true);
 
     const newStatus = sensor.notification === "on" ? "off" : "on";
-    const payload = {
-      sensor_id: sensor.sensorId,
-      notification_status: newStatus,
-    };
 
     try {
-      const response = await fetch("https://0b3f-182-188-107-26.ngrok-free.app/update-notification-status/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ payload }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update notification status");
-      }
+      await updateNotificationStatus(sensor.sensorId, newStatus);
 
       setSensorData((prevData) =>
         prevData.map((item) =>
@@ -35,14 +22,18 @@ export default function TableRow({ sensor, openPopup, setSensorData }) {
       );
     } catch (error) {
       console.error("Error updating notification status:", error);
-      alert("Failed to update notification status. Please try again.");
+      alert(`Failed to update notification status: ${error.message || "Please try again."}`);
     } finally {
       setIsToggling(false);
     }
   };
 
   const getStatusTagClass = (status) => {
-    switch (status?.toLowerCase()) {
+    // Check if status is a string and not null/undefined
+    if (typeof status !== 'string' || status == null) {
+      return "bg-gray-100 text-gray-800";
+    }
+    switch (status.toLowerCase()) {
       case "online":
         return "bg-green-100 text-green-800";
       case "offline":

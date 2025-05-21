@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import TableHeader from "./TableHeader";
-import TableRow from "./TableRow";
-import { fetchSensorData } from "../api/api";
+import SensorTableHeader from "./SensorTableHeader";
+import SensorTableRow from "./SensorTableRow";
+import { fetchSensorData } from "../../api/api";
 
-export default function Table() {
+export default function SensorTable() {
   const [sensorData, setSensorData] = useState([]);
   const [selectedTemperatures, setSelectedTemperatures] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -59,7 +59,6 @@ export default function Table() {
 
   return (
     <div className="p-6 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl shadow-xl">
-
       <div className="relative mb-6">
         <input
           type="text"
@@ -84,13 +83,12 @@ export default function Table() {
         </svg>
       </div>
 
-
       <div className="overflow-auto h-[670px] scroll-container rounded-xl shadow-inner">
         <table className="min-w-full table-fixed border border-gray-100 divide-y divide-gray-100 bg-white rounded-xl">
-          <TableHeader />
+          <SensorTableHeader />
           <tbody>
             {filteredSensorData.map((sensor, index) => (
-              <TableRow
+              <SensorTableRow
                 key={sensor['Sensors_Id'] || sensor.sensor_id || index}
                 sensor={{
                   sensorId: sensor['Sensors_Id'] || sensor.sensor_id,
@@ -123,42 +121,58 @@ export default function Table() {
         </table>
       </div>
 
-
       {selectedTemperatures && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-2xl max-h-[80vh] overflow-auto shadow-2xl">
-            <h2 className="text-xl font-bold mb-4 text-gray-800 bg-gradient-to-r from-blue-500 to-indigo-500 text-white p-3 rounded-t-lg">
-              All Temperature Readings
-            </h2>
-            {selectedTemperatures.length > 0 ? (
-              <table className="min-w-full border border-gray-100 rounded-lg">
-                <thead>
-                  <tr className="bg-gradient-to-r from-gray-50 to-blue-50">
-                    <th className="px-4 py-3 text-left text-gray-600 font-medium">Temperature (°F)</th>
-                    <th className="px-4 py-3 text-left text-gray-600 font-medium">Timestamp</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedTemperatures.map((temp, index) => (
-                    <tr key={index} className="border-t hover:bg-gray-50">
-                      <td className="px-4 py-3 text-gray-800">{temp.temperature ?? 'N/A'}</td>
-                      <td className="px-4 py-3 text-gray-800">{temp.timestamp ?? 'N/A'}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="text-gray-600 p-4">No temperature data available.</p>
-            )}
-            <button
-              onClick={closePopup}
-              className="mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all"
-            >
-              Close
-            </button>
-          </div>
+  <div 
+    className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50"
+    onClick={closePopup}
+  >
+    <div 
+      className="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden" // Changed to flex-col and overflow-hidden
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Header Section - Fixed */}
+      <div className="bg-gradient-to-r from-blue-500 to-indigo-500 p-4">
+        <h2 className="text-xl font-bold text-white">
+          All Temperature Readings
+        </h2>
+      </div>
+
+      {/* Table Header - Fixed */}
+      <div className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-blue-50">
+        <div className="grid grid-cols-2">
+          <div className="px-4 py-3 text-left text-gray-600 font-medium">Temperature (°F)</div>
+          <div className="px-4 py-3 text-left text-gray-600 font-medium">Timestamp</div>
         </div>
-      )}
+      </div>
+
+      {/* Scrollable Content */}
+      <div className="overflow-y-auto flex-1">
+        {selectedTemperatures.length > 0 ? (
+          <div className="divide-y divide-gray-100">
+            {selectedTemperatures.map((temp, index) => (
+              <div key={index} className="grid grid-cols-2 hover:bg-gray-50">
+                <div className="px-4 py-3 text-gray-800">{temp.temperature ?? 'N/A'}</div>
+                <div className="px-4 py-3 text-gray-800">{temp.timestamp ?? 'N/A'}</div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-4 text-gray-600">No temperature data available.</div>
+        )}
+      </div>
+
+      {/* Fixed Close Button */}
+      <div className="border-t border-gray-200 bg-white p-4">
+        <button
+          onClick={closePopup}
+          className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }
