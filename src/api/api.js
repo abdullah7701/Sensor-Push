@@ -20,10 +20,10 @@ export const fetchSensorData = async () => {
 export const updateNotificationStatus = async (sensorId, notificationStatus) => {
   try {
     const payload = {
-      sensor_id: sensorId,
+      Sensors_Id: sensorId,
       notification_status: notificationStatus,
     };
-    const response = await fetch(`${BASE_URL}/update-notification-status/`, {
+    const response = await fetch(`${BASE_URL}/update-sensor/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -60,3 +60,34 @@ export const fetchExistingStoreData = async () => {
     return [];
   }
 };
+export const addOrUpdateSensor = async (payload) => {
+  try {
+    const response = await fetch(`${BASE_URL}/update-sensor/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+    if (result.status === "success") {
+      return result;
+    } else {
+      throw new Error(result.message || "Failed to add/update sensor");
+    }
+  } catch (error) {
+    console.error("Error updating sensor:", error);
+    throw error;
+  }
+};
+export const addOrUpdateExistingStore = async (payload) => {
+  const response = await fetch(`${BASE_URL}/update-existing-store/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const result = await response.json();
+  if (result.status === "success") return result;
+  throw new Error(result.message || "Failed to add/update store");
+};
+
