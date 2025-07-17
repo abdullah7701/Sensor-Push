@@ -1,4 +1,4 @@
-const BASE_URL = "http://161.35.107.143:8080";
+const BASE_URL = "http://161.35.107.143:5000";
 
 export const fetchSensorData = async () => {
   try {
